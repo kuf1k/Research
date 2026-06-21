@@ -4,6 +4,6 @@
  **Група:** ІПС-12.
  ## 🚀 Запуск проєкта локально
  ```bash
- git clone https://github.com/kuf1k/Research-.git
- cd Research-
+ git clone https://github.com/kuf1k/Research.git
+ cd Research
 ```
