@@ -247,7 +247,7 @@ int main() {
 9. https://www.geeksforgeeks.org/dsa/introduction-to-sorting-algorithm/
 10. https://www.toptal.com/developers/sorting-algorithms
 11. https://sortvisualizer.com/quicksort/
-
+12. http://courses.ece.ubc.ca/320/notes/InsertionSort.pdf
 
 
 
