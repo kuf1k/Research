@@ -39,4 +39,8 @@
 ## Використані джерела :
 1. https://www.geeksforgeeks.org/dsa/introduction-to-sorting-algorithm/
 2. https://www.geeksforgeeks.org/dsa/time-complexities-of-all-sorting-algorithms/
-3. 
+3. https://www.geeksforgeeks.org/dsa/applications-advantages-and-disadvantages-of-sorting-algorithm/
+4. https://en.wikipedia.org/wiki/Sorting_algorithm
+5. https://builtin.com/machine-learning/fastest-sorting-algorithm
+6. https://lamfo-unb.github.io/2019/04/21/Sorting-algorithms/
+7. https://medium.com/@inquesto2003/all-you-need-to-know-about-sorting-algorithms-28c8694c3f80
