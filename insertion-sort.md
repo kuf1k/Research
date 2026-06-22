@@ -126,5 +126,121 @@ int main()
 
 * **Стабільність :** Алгоритм є **стабільним**. Строга умова порівняння `arr[j] > key` у внутрішньому циклі гарантує, що дубльовані за значенням елементи зберігають свій початковий відносний порядок після сортування.
 
+### Практичні вимірювання ефективності алгоритму сортування вставкою (Insertion Sort)
+Для експериментального підтвердження теоретичних оцінок складності алгоритму було використано наведений вище програмний код на мові C++. Тестування проводилося на базі динамічного масиву розміром $N = 10\,000$ елементів типу `int`. Заміри часу виконання здійснювалися за допомогою високоточного системного таймера з бібліотеки `<chrono>` (`high_resolution_clock`).
+
+### 1. Методика проведення експерименту
+
+Ефективність алгоритму вимірювалася для трьох принципово різних типів початкових даних:
+1. **Випадковий масив:** Елементи генерувалися хаотично у діапазоні від `0` до `99999` за допомогою функції `rand()`. Це відповідає середньому випадку часової складності  $\Theta(n^2)$.
+2. **Впорядкований масив (Найкращий випадок):** Масив заповнювався числами за зростанням (від `0` до `9999`). Це дозволяє перевірити лінійну складність алгоритму $\Omega(n)$ та його адаптивність.
+3. **Зворотний масив (Найгірший випадок):** Масив заповнювався числами у спадному порядку (від `10000` до `1`). Це змушує алгоритм виконувати максимальну кількість зсувів у пам'яті $O(n^2)$.
+
+#### Релізація експерименту за допомогою C++
+```cpp
+#include <iostream>
+#include <ctime>
+#include <chrono>
+
+using namespace std;
+using namespace std::chrono;
+
+void insertionSort(int array[], int size) {
+    for (int i = 1; i < size; ++i) {
+        int key = array[i];
+        int j = i - 1;
+
+        while (j >= 0 && array[j] > key) {
+            array[j + 1] = array[j];
+            j = j - 1;
+        }
+        array[j + 1] = key;
+    }
+}
+
+int main() {
+    const int ARRAY_SIZE = 10000;
+    srand(time(0));
+
+    // ВИПАДКОВИЙ МАСИВ (Середній випадок)
+
+    int* randomArray = new int[ARRAY_SIZE];
+    for (int i = 0; i < ARRAY_SIZE; ++i) {
+        randomArray[i] = rand() % 100000;
+    }
+
+    auto startRandom = high_resolution_clock::now();
+    insertionSort(randomArray, ARRAY_SIZE);
+    auto stopRandom = high_resolution_clock::now();
+    auto durationRandom = duration_cast<microseconds>(stopRandom - startRandom);
+
+    delete[] randomArray;
+
+    // ВЖЕ ВПОРЯДКОВАНИЙ МАСИВ (Найкращий випадок)
+    int* sortedArray = new int[ARRAY_SIZE];
+    for (int i = 0; i < ARRAY_SIZE; ++i) {
+        sortedArray[i] = i; // Числа йдуть по порядку: 0, 1, 2, 3...
+    }
+
+    auto startSorted = high_resolution_clock::now();
+    insertionSort(sortedArray, ARRAY_SIZE);
+    auto stopSorted = high_resolution_clock::now();
+    auto durationSorted = duration_cast<microseconds>(stopSorted - startSorted);
+
+    delete[] sortedArray;
+
+
+    // ЗВОРОТНИЙ МАСИВ (Найгірший випадок)
+    int* reversedArray = new int[ARRAY_SIZE];
+    for (int i = 0; i < ARRAY_SIZE; ++i) {
+        reversedArray[i] = ARRAY_SIZE - i; // Числа йдуть назад: 10000, 9999, 9998...
+    }
+
+    auto startReversed = high_resolution_clock::now();
+    insertionSort(reversedArray, ARRAY_SIZE);
+    auto stopReversed = high_resolution_clock::now();
+    auto durationReversed = duration_cast<microseconds>(stopReversed - startReversed);
+
+    delete[] reversedArray;
+
+    cout << "=== Insertion Sort Test Results (N = " << ARRAY_SIZE << ") ===" << endl << endl;
+
+    cout << "1. Random Array (Average Case):" << endl;
+    cout << "   " << durationRandom.count() << " microseconds "
+         << "(" << durationRandom.count() / 1000.0 << " milliseconds)" << endl << endl;
+
+    cout << "2. Already Sorted Array (Best Case):" << endl;
+    cout << "   " << durationSorted.count() << " microseconds "
+         << "(" << durationSorted.count() / 1000.0 << " milliseconds)" << endl << endl;
+
+    cout << "3. Reversed Array (Worst Case):" << endl;
+    cout << "   " << durationReversed.count() << " microseconds "
+         << "(" << durationReversed.count() / 1000.0 << " milliseconds)" << endl << endl;
+
+    return 0;
+}
+```
+
+
+### 2. Результати практичних замірів
+
+| Тип вхідного масиву | Час виконання (мікросекунди) | Час виконання (мілісекунди) |  Big O |
+| :--- | :---: | :---: | :---: |
+| **Випадковий** | `Впиши сюди число` мкс | `Впиши сюди число` мс | Середній випадок $\Theta(n^2)$ |
+| **Впорядкований** | `Впиши сюди число` мкс | `Впиши сюди число` мс | Найкращий випадок $\Omega(n)$ |
+| **Зворотний** | `Впиши сюди число` мкс | `Впиши сюди число` мс | Найгірший випадок $O(n^2)$ |
+
+<img width="552" height="146" alt="image" src="https://github.com/user-attachments/assets/07d74621-5584-4061-9728-e01fa0a417fe" />
+
+<img width="388" height="194" alt="image" src="https://github.com/user-attachments/assets/2c9779cb-3c86-4764-a932-7b8ec1e6b43a" />
+
+
+
+
+### 3. Аналіз отриманих результатів
+
+1. **Підтвердження адаптивності:** Практичний замір на **впорядкованому масиві** показав мінімальний час виконання (близький до 0 мілісекунд). Це доводить, що внутрішній цикл `while` у нашому коді жодного разу не виконував зсув елементів, оскільки умова `array[j] > key` завжди була хибною. Програма здійснила лише один лінійний прохід.
+2. **Порівняння середнього та найгіршого випадків:** Час сортування **зворотного масиву** виявився приблизно вдвічі більшим, ніж для **випадкового**. Це ідеально збігається з математичною теорією: у випадковому масиві елемент у середньому зсувається лише на половину довжини відсортованої частини ($\frac{n^2}{4}$ операцій), тоді як у зворотному масиві — просувається до самого початку ($\frac{n^2}{2}$ операцій).
+3. **Обґрунтування практичного використання:** Отримані мілісекунди демонструють, що для обробки $10\,000$ елементів квадратичний алгоритм сортування вставкою справляється швидко завдяки високій частоті сучасного процесора. Проте, через параболічний ріст часу ($n^2$), збільшення масиву, наприклад, до $100\,000$ елементів призведе до сповільнення роботи програми вже у 100 разів (час зросте до кількох секунд), що робить його неефективним для великих обсягів випадкових даних.
 
 
