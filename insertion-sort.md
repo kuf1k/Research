@@ -52,5 +52,44 @@
 
     *Теорія ймовірностей та математична статистика корисна для оцінки ефективності алгоритму на практиці при обробці випадкових вхідних даних.*
 
+  ## Реалізація алгоритму  алгоритму сортування вставкою (Insertion Sort):
+Реалізація за допомогою C++ : 
+```cpp
+#include <iostream>
+using namespace std;
 
+void insertionSort(int arr[], int n)
+{
+    for (int i = 1; i < n; ++i) {
+        int key = arr[i];
+        int j = i - 1;
+
+        /* Зсуваємо елементи масиву arr[0..i-1], які є
+           більшими за key, на одну позицію вперед 
+           від їхнього поточного положення */
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j = j - 1;
+        }
+        arr[j + 1] = key; // Вставляємо ключ на його правильне місце
+    }
+}
+
+void printArray(int arr[], int n)
+{
+    for (int i = 0; i < n; ++i)
+        cout << arr[i] << " ";
+    cout << endl;
+}
+
+int main()
+{
+    int arr[] = { 156, 24, 13, 90, 32, 2, 25, 52, 67 };
+    int n = sizeof(arr) / sizeof(arr[0]);
+
+    insertionSort(arr, n);
+    printArray(arr, n);
+
+    return 0;
+}
 
