@@ -1,3 +1,4 @@
+[insertion_sort_results.csv](https://github.com/user-attachments/files/29267261/insertion_sort_results.csv)
 # Дослідження алгоритму сортування вставкою (Insertion Sort)
 **Сортування вставкою (Insertion Sort)** — це порівняльний алгоритм сортування, який будує фінальний відсортований масив по одному елементу за раз, шляхом ітеративного переміщення кожного елемента з невідсортованої частини на його правильну позицію у відсортованій частині масиву.
 ## Галузі математики, що використовуються для опису сортування вставкою (Insertion Sort)
@@ -211,8 +212,10 @@ int main() {
 
 <img width="388" height="194" alt="image" src="https://github.com/user-attachments/assets/2c9779cb-3c86-4764-a932-7b8ec1e6b43a" />
 
-
-
+```csv
+Array_Size,Best_Case_Mks,Average_Case_Mks,Worst_Case_Mks
+10000,14,26728,50151
+```
 
 ### 3. Аналіз отриманих результатів
 
