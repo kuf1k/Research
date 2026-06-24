@@ -10,7 +10,7 @@
 
 **2. Злиття`RUN-ів` :** Timsort об'єднує `RUN-и`, використовуючи правила, які забезпечують збалансоване та ефективне об'єднання, подібно до сортування злиттям, але оптимізовано для реальних даних.
 
-## Галузі математики, що використовуються для опису TimSort:
+## Галузі математики, що використовуються для опису алгоритму сортування Тіма (Tim Sort):
 ### 1. Теорія алгоритмів та математичний аналіз (Асимптотичний аналіз) : 
 Математичний аналіз та теорія алгоритмів застосовуються для оцінки ефективності алгоритму, коли розмір вхідного масиву $n$ прагне до нескінченності ($n \to \infty$).
 
@@ -25,7 +25,7 @@
 Оскільки Timsort є складним комбінованим алгоритмом (використовує цикли для пошуку `RUN-ів`, сортування вставками для малих `RUN-ів` та стек для їхнього злиття), суворе логічне доведення його коректності поєднує метод математичної індукції та метод формальних інваріантів.
 
 
-## Реалізація алгоритму  алгоритму сортування Тіма (Merge Sort):
+## Реалізація алгоритму сортування Тіма (Tim Sort):
 ### Реалізація за допомогою C++ : 
 ```cpp
 #include <iostream>
@@ -171,6 +171,202 @@ int main() {
 * **Ефективність для зв'язаних списків :** Хоча для векторів та масивів алгоритм потребує $O(n)$ додаткової пам'яті, при сортуванні структур типу зв'язаний список сортування злиттям (Merge Sort) може працювати за $O(1)$ додаткової пам'яті. Це відбувається, через те, що у списках елементи не лежать у пам'яті послідовно, а зв'язані вказівниками і процедуру злиття можна виконати, просто змінюючи напрямок вказівників, без створення тимчасових копій елементів. Тобто для списків Merge Sort стає In-place алгоритмом, зберігаючи часову складність $O(n \log n)$. 
 
 * **Режим «галопу» (Galloping Mode):** Це унікальна властивість Timsort, якої немає ні в Merge Sort, ні в Insertion Sort. Коли алгоритм зливає два великих `RUN-и`, він збирає статистику порівнянь. Якщо елементи одного підмасиву виявляються меншими за поточний елемент іншого багато разів поспіль, Timsort замість поштучного порівняння за $O(1)$ перемикається на бінарний пошук. Це дозволяє миттєво знаходити місце для вставки цілих кластерів даних за логарифмічний час $O(\log k)$. У цьому аспекті Timsort кардинально обходить як Merge Sort та Tim Sort.
+
+## Практичні вимірювання ефективності алгоритму сортування Тіма (Tim Sort)
+Для експериментального підтвердження теоретичних оцінок складності алгоритму було використано наведений програмний код на мові C++. Тестування проводилося на базі динамічного контейнера (вектора) розміром $N = 100,000$ елементів типу `int`. Заміри часу виконання здійснювалися за допомогою високоточного системного таймера з бібліотеки `<chrono>` (`high_resolution_clock`).
+### 1. Методика проведення експерименту
+Ефективність алгоритму вимірювалася для трьох принципово різних типів початкових даних:
+1. **Випадковий масив(Середній випадок):**  Елементи генерувалися хаотично у діапазоні від `0` до `99999` за допомогою функції `rand()`. Це відповідає середньому випадку часової складності $\Theta(n \log n)$.
+2. **Впорядкований масив (Найкращий випадок):** Масив заповнювався числами за зростанням (від `0` до `99999`). Це дозволяє перевірити унікальну лінійну складність алгоритму $\Omega(n)$ та його адаптивність до вже готових даних.
+3. **Зворотний масив (Найгірший випадок):**  Масив заповнювався числами у спадному порядку (від `100000` до `1`). Це дозволяє перевірити, як функція `findRun` ефективно виявляє спадні послідовності та розгортає їх за лінійний час $O(k)$, оптимізуючи підсумкову складність до $O(n \log n)$.
+
+#### Релізація експерименту за допомогою C++
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <ctime>
+#include <chrono>
+#include <fstream>
+
+using namespace std;
+using namespace std::chrono;
+
+const int minRUN = 32;
+
+int calcMinRun(int n) {
+    int r = 0;
+    while (n >= minRUN) {
+        r |= (n & 1);
+        n >>= 1;
+    }
+    return n + r;
+}
+
+void insertionSort(vector<int>& arr, int left, int right) {
+    for (int i = left + 1; i <= right; i++) {
+        int key = arr[i];
+        int j = i - 1;
+        while (j >= left && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        arr[j + 1] = key;
+    }
+}
+
+void merge(vector<int>& arr, int l, int m, int r) {
+    vector<int> left(arr.begin() + l, arr.begin() + m + 1);
+    vector<int> right(arr.begin() + m + 1, arr.begin() + r + 1);
+
+    int i = 0, j = 0, k = l;
+    while (i < left.size() && j < right.size()) {
+        if (left[i] <= right[j]) arr[k++] = left[i++];
+        else arr[k++] = right[j++];
+    }
+    while (i < left.size()) arr[k++] = left[i++];
+    while (j < right.size()) arr[k++] = right[j++];
+}
+
+int findRun(vector<int>& arr, int start, int n) {
+    int end = start + 1;
+    if (end == n) return end;
+
+    if (arr[end] < arr[start]) {
+        while (end < n && arr[end] < arr[end - 1]) end++;
+        reverse(arr.begin() + start, arr.begin() + end);
+    } else {
+        while (end < n && arr[end] >= arr[end - 1]) end++;
+    }
+    return end;
+}
+
+void timsort(vector<int>& arr) {
+    int n = arr.size();
+    int minRun = calcMinRun(n);
+    vector<pair<int,int>> runs;
+
+    int i = 0;
+    while (i < n) {
+        int runEnd = findRun(arr, i, n);
+        int runLen = runEnd - i;
+
+        if (runLen < minRun) {
+            int end = min(i + minRun, n);
+            insertionSort(arr, i, end - 1);
+            runEnd = end;
+        }
+        runs.push_back({i, runEnd});
+        i = runEnd;
+
+        while (runs.size() > 1) {
+            int l1 = runs[runs.size() - 2].first;
+            int r1 = runs[runs.size() - 2].second;
+            int l2 = runs[runs.size() - 1].first;
+            int r2 = runs[runs.size() - 1].second;
+
+            int len1 = r1 - l1;
+            int len2 = r2 - l2;
+            if (len1 <= len2) {
+                merge(arr, l1, r1 - 1, r2 - 1);
+                runs.pop_back();
+                runs[runs.size() - 1] = {l1, r2};
+            } else break;
+        }
+    }
+
+    while (runs.size() > 1) {
+        int l1 = runs[runs.size() - 2].first;
+        int r1 = runs[runs.size() - 2].second;
+        int l2 = runs[runs.size() - 1].first;
+        int r2 = runs[runs.size() - 1].second;
+        merge(arr, l1, r1 - 1, r2 - 1);
+        runs.pop_back();
+        runs[runs.size() - 1] = {l1, r2};
+    }
+}
+
+int main() {
+    const int ARRAY_SIZE = 100000;
+    srand(time(0));
+
+    // 1. ВИПАДКОВИЙ МАСИВ (Середній випадок)
+    vector<int> randomArray(ARRAY_SIZE);
+    for (int i = 0; i < ARRAY_SIZE; ++i) {
+        randomArray[i] = rand() % 100000;
+    }
+
+    auto startRandom = high_resolution_clock::now();
+    timsort(randomArray);
+    auto stopRandom = high_resolution_clock::now();
+    auto durationRandom = duration_cast<microseconds>(stopRandom - startRandom);
+
+
+    // 2. ВЖЕ ВПОРЯДКОВАНИЙ МАСИВ (Найкращий випадок)
+    vector<int> sortedArray(ARRAY_SIZE);
+    for (int i = 0; i < ARRAY_SIZE; ++i) {
+        sortedArray[i] = i;
+    }
+
+    auto startSorted = high_resolution_clock::now();
+    timsort(sortedArray);
+    auto stopSorted = high_resolution_clock::now();
+    auto durationSorted = duration_cast<microseconds>(stopSorted - startSorted);
+
+
+    // 3. ЗВОРОТНИЙ МАСИВ (Найгірший випадок теорії)
+    vector<int> reversedArray(ARRAY_SIZE);
+    for (int i = 0; i < ARRAY_SIZE; ++i) {
+        reversedArray[i] = ARRAY_SIZE - i;
+    }
+
+    auto startReversed = high_resolution_clock::now();
+    timsort(reversedArray);
+    auto stopReversed = high_resolution_clock::now();
+    auto durationReversed = duration_cast<microseconds>(stopReversed - startReversed);
+
+
+    // === ЗАПИС РЕЗУЛЬТАТІВ У CSV ФАЙЛ ===
+    ofstream csvFile("timsort_results.csv");
+    if (csvFile.is_open()) {
+        csvFile << "Array_Size,Best_Case_Mks,Average_Case_Mks,Worst_Case_Mks\n";
+        csvFile << ARRAY_SIZE << ","
+                << durationSorted.count() << ","
+                << durationRandom.count() << ","
+                << durationReversed.count() << "\n";
+        csvFile.close();
+    }
+
+
+    cout << "=== Timsort Test Results (N = " << ARRAY_SIZE << ") ===" << endl << endl;
+
+    cout << "1. Random Array (Average Case):" << endl;
+    cout << "   " << durationRandom.count() << " microseconds "
+         << "(" << durationRandom.count() / 1000.0 << " milliseconds)" << endl << endl;
+
+    cout << "2. Already Sorted Array (Best Case):" << endl;
+    cout << "   " << durationSorted.count() << " microseconds "
+         << "(" << durationSorted.count() / 1000.0 << " milliseconds)" << endl << endl;
+
+    cout << "3. Reversed Array (Worst Case/Optimized Run):" << endl;
+    cout << "   " << durationReversed.count() << " microseconds "
+         << "(" << durationReversed.count() / 1000.0 << " milliseconds)" << endl << endl;
+
+    return 0;
+}
+```
+
+### 2. Результати практичних замірів 
+
+[timsort_results.csv](https://github.com/user-attachments/files/29294368/timsort_results.csv)
+```csv
+Array_Size,Best_Case_Mks,Average_Case_Mks,Worst_Case_Mks
+100000,195,24537,755
+```
+
+<img width="556" height="159" alt="image" src="https://github.com/user-attachments/assets/611dd47f-8139-4c77-98e5-e1d2d1fde863" />
+<img width="368" height="202" alt="image" src="https://github.com/user-attachments/assets/a3fd3da0-e51b-4050-9375-76e685193b68" />
+
 
  
 
