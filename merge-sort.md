@@ -291,9 +291,22 @@ int main() {
 ```
 ### 2. Результати практичних замірів 
 
-[merge_sort_results.csv](https://github.com/user-attachments/files/29287185/merge_sort_results.csv)
-
+[merge_sort_results.csv](https://github.com/user-attachments/files/29287643/merge_sort_results.csv)
 ```csv
 Array_Size,Best_Case_Mks,Average_Case_Mks,Worst_Case_Mks
-10000,3043,3192,2665
+10000,3255,5583,2279
 ```
+
+
+| Тип вхідного масиву | Час виконання (мікросекунди) | Час виконання (мілісекунди) | Big O |
+| :--- | :---: | :---: | :---: |
+| **Випадковий** | `5583` мкс | `5.583` мс | Середній випадок $\Theta(n \log n)$ |
+| **Впорядкований** | `3255` мкс | `3.255` мс | Найкращий випадок $\Theta(n \log n)$ |
+| **Зворотний** | `2279` мкс | `2.279` мс | Найгірший випадок $\Theta(n \log n)$ |
+
+
+<img width="552" height="155" alt="image" src="https://github.com/user-attachments/assets/38f06be7-a83b-4e4f-a884-afc6ccd69e1d" />
+
+<img width="340" height="202" alt="image" src="https://github.com/user-attachments/assets/f75fd0d3-0504-4d84-96c1-07e7689b66e1" />
+
+
