@@ -118,6 +118,7 @@ int main()
 #include <iostream>
 #include <ctime>
 #include <chrono>
+#include <fstream>
 
 using namespace std;
 using namespace std::chrono;
@@ -139,8 +140,7 @@ int main() {
     const int ARRAY_SIZE = 10000;
     srand(time(0));
 
-    // ВИПАДКОВИЙ МАСИВ (Середній випадок)
-
+    // 1. ВИПАДКОВИЙ МАСИВ (Середній випадок)
     int* randomArray = new int[ARRAY_SIZE];
     for (int i = 0; i < ARRAY_SIZE; ++i) {
         randomArray[i] = rand() % 100000;
@@ -153,10 +153,10 @@ int main() {
 
     delete[] randomArray;
 
-    // ВЖЕ ВПОРЯДКОВАНИЙ МАСИВ (Найкращий випадок)
+    // 2. ВЖЕ ВПОРЯДКОВАНИЙ МАСИВ (Найкращий випадок)
     int* sortedArray = new int[ARRAY_SIZE];
     for (int i = 0; i < ARRAY_SIZE; ++i) {
-        sortedArray[i] = i; // Числа йдуть по порядку: 0, 1, 2, 3...
+        sortedArray[i] = i;
     }
 
     auto startSorted = high_resolution_clock::now();
@@ -166,11 +166,10 @@ int main() {
 
     delete[] sortedArray;
 
-
-    // ЗВОРОТНИЙ МАСИВ (Найгірший випадок)
+    // 3. ЗВОРОТНИЙ МАСИВ (Найгірший випадок)
     int* reversedArray = new int[ARRAY_SIZE];
     for (int i = 0; i < ARRAY_SIZE; ++i) {
-        reversedArray[i] = ARRAY_SIZE - i; // Числа йдуть назад: 10000, 9999, 9998...
+        reversedArray[i] = ARRAY_SIZE - i;
     }
 
     auto startReversed = high_resolution_clock::now();
@@ -179,6 +178,17 @@ int main() {
     auto durationReversed = duration_cast<microseconds>(stopReversed - startReversed);
 
     delete[] reversedArray;
+
+    // === ЗАПИС РЕЗУЛЬТАТІВ У CSV ФАЙЛ ===
+    ofstream csvFile("insertion_sort_results.csv");
+    if (csvFile.is_open()) {
+        csvFile << "Array_Size,Best_Case_Mks,Average_Case_Mks,Worst_Case_Mks\n";
+        csvFile << ARRAY_SIZE << ","
+                << durationSorted.count() << ","
+                << durationRandom.count() << ","
+                << durationReversed.count() << "\n";
+        csvFile.close();
+    }
 
     cout << "=== Insertion Sort Test Results (N = " << ARRAY_SIZE << ") ===" << endl << endl;
 
