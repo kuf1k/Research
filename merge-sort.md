@@ -1,5 +1,25 @@
 # Дослідження алгоритму сортування злиттям (Merge Sort)
 **Сортування злиттям (Merge Sort)** - це стабільний рекурсивний алгоритм сортування порівняннями, що базується на парадигмі «розділяй і володарюй» (divide and conquer). Він працює шляхом рекурсивного ділення вхідного масиву на дві половини, рекурсивного сортування цих двох половин і, нарешті, об'єднання їх знову для отримання відсортованого масиву.
+
+**Детальніше пояснення алгоритму:**
+
+**1. Фаза поділу**
+
+Алгоритм починається з багаторазового поділу вхідного масиву навпіл. Спочатку основний масив ділиться на дві рівні (або майже рівні) частини. Потім кожна з цих частин ще більше ділиться на дві. Цей поділ продовжується рекурсивно, доки ми не досягнемо підмасивів, що містять лише один елемент. За визначенням, масив з одним елементом вже відсортований.
+
+**2. Фаза злиття**
+
+Після того, як у нас є наші одноелементні підмасиви, ми об'єднуємо їх відсортованим чином. Процес об'єднання порівнює елементи з двох відсортованих підмасивів і будує з них новий, більший відсортований масив. Для кожної пари відбувається:
+
+* Порівняння перших елементів обох масивів.
+* Вибір меншого елемента і додаванння його до нашого результуючого масиву.
+* Перехід до наступного елемента масиву, з якого було взято менший елемент.
+Повторення, доки не будуть оброблені всі елементи з обох масивів.
+
+**3. Фаза комбінування**
+
+У міру того, як об'єднання продовжується, ми просуваємося назад по дереву рекурсії. Кожна операція об'єднання створює все більші й більші відсортовані підмасиви. Те, що починається як об'єднання пар окремих елементів, переростає в об'єднання масивів з 2 елементів, потім з 4, потім з 8 і так далі. Кожен результат об'єднання зберігає свою властивість сортування, гарантуючи, що до моменту досягнення остаточного об'єднання у нас буде повністю відсортований масив.
+
 ## Галузі математики, що використовуються для опису сортування вставкою (Merge Sort)
 ### 1. Теорія алгоритмів та математичний аналіз (Асимптотичний аналіз) : 
 Математичний аналіз та теорія алгоритмів застосовуються для оцінки ефективності алгоритму, коли розмір вхідного масиву $n$ прямує до нескінченності ($n \to \infty$).
@@ -130,7 +150,7 @@ https://www.w3schools.com/dsa/dsa_algo_mergesort.php
 
     * **Найкращий випадок ( $O(n  \log  n)$ ):** Навіть якщо вхідні дані вже повністю відсортовані, сортування злиттям усе одно чітко дотримується концепції «розділяй і володарюй», рекурсивно розбиваючи масив на частини та об'єднуючи їх назад. Кількість операцій не зменшується, що й зумовлює складність $O(n \log n)$.
 
-    * **Середній випадок ( $O(n  \log  n)$ ):** Незалежно від початкового порядку елементів, алгоритм завжди ділить масив навпіл і зливає отримані частини у строго структурований спосіб. Оскільки цей процес повторюється на $\log n$ рівнях рекурсії, а кожен рівень вимагає $O(n)$ операцій для злиття елементів, загальна складність залишається рівною $O(n \log n)$.
+    * **Середній випадок ( $\Theta(n \log n)$ ):** Незалежно від початкового порядку елементів, алгоритм завжди ділить масив навпіл і зливає отримані частини у строго структурований спосіб. Оскільки цей процес повторюється на $\log n$ рівнях рекурсії, а кожен рівень вимагає $O(n)$ операцій для злиття елементів, загальна складність залишається рівною $O(n \log n)$.
 
     * **Найгірший випадок ( $O(n  \log  n)$ ):** Коли вхідні дані впорядковані найгіршим чинником (наприклад, у зворотному порядку), сортування злиттям усе одно виконує той самий фіксований обсяг роботи. На відміну від швидкого сортування (Quick Sort), ефективність якого в найгіршому випадку може впасти до $O(n^2)$, сортування злиттям гарантує стабільну продуктивність $O(n \log n)$.
 
@@ -146,3 +166,134 @@ https://www.w3schools.com/dsa/dsa_algo_mergesort.php
 
 ## Практичні вимірювання ефективності алгоритму сортування злиттям (Merge Sort)
 
+```cpp
+#include <iostream>
+#include <vector>
+#include <ctime>
+#include <chrono>
+#include <fstream>
+
+using namespace std;
+using namespace std::chrono;
+
+
+void merge(vector<int>& arr, int left, int mid, int right) {
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+
+    vector<int> L(n1);
+    vector<int> R(n2);
+
+    for (int i = 0; i < n1; i++) L[i] = arr[left + i];
+    for (int j = 0; j < n2; j++) R[j] = arr[mid + 1 + j];
+
+    int i = 0, j = 0, k = left;
+
+    while (i < n1 && j < n2) {
+        if (L[i] <= R[j]) {
+            arr[k] = L[i];
+            i++;
+        } else {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+
+    while (i < n1) {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+
+    while (j < n2) {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+}
+
+void mergeSort(vector<int>& arr, int left, int right) {
+    if (left < right) {
+        int mid = left + (right - left) / 2;
+
+        mergeSort(arr, left, mid);
+        mergeSort(arr, mid + 1, right);
+
+        merge(arr, left, mid, right);
+    }
+}
+
+int main() {
+    const int ARRAY_SIZE = 10000;
+    srand(time(0));
+
+    // 1. ВИПАДКОВИЙ МАСИВ (Середній випадок)
+    vector<int> randomArray(ARRAY_SIZE);
+    for (int i = 0; i < ARRAY_SIZE; ++i) {
+        randomArray[i] = rand() % 100000;
+    }
+
+    auto startRandom = high_resolution_clock::now();
+    mergeSort(randomArray, 0, ARRAY_SIZE - 1);
+    auto stopRandom = high_resolution_clock::now();
+    auto durationRandom = duration_cast<microseconds>(stopRandom - startRandom);
+
+    // 2. ВЖЕ ВПОРЯДКОВАНИЙ МАСИВ (Найкращий випадок)
+    vector<int> sortedArray(ARRAY_SIZE);
+    for (int i = 0; i < ARRAY_SIZE; ++i) {
+        sortedArray[i] = i;
+    }
+
+    auto startSorted = high_resolution_clock::now();
+    mergeSort(sortedArray, 0, ARRAY_SIZE - 1);
+    auto stopSorted = high_resolution_clock::now();
+    auto durationSorted = duration_cast<microseconds>(stopSorted - startSorted);
+
+    // 3. ЗВОРОТНИЙ МАСИВ (Найгірший випадок)
+    vector<int> reversedArray(ARRAY_SIZE);
+    for (int i = 0; i < ARRAY_SIZE; ++i) {
+        reversedArray[i] = ARRAY_SIZE - i;
+    }
+
+    auto startReversed = high_resolution_clock::now();
+    mergeSort(reversedArray, 0, ARRAY_SIZE - 1);
+    auto stopReversed = high_resolution_clock::now();
+    auto durationReversed = duration_cast<microseconds>(stopReversed - startReversed);
+
+    // Запис результатів експерименту у CSV файл
+    ofstream csvFile("merge_sort_results.csv");
+    if (csvFile.is_open()) {
+        csvFile << "Array_Size,Best_Case_Mks,Average_Case_Mks,Worst_Case_Mks\n";
+        csvFile << ARRAY_SIZE << ","
+                << durationSorted.count() << ","
+                << durationRandom.count() << ","
+                << durationReversed.count() << "\n";
+        csvFile.close();
+    }
+
+    cout << "=== Merge Sort Test Results (N = " << ARRAY_SIZE << ") ===" << endl << endl;
+
+    cout << "1. Random Array (Average Case):" << endl;
+    cout << "   " << durationRandom.count() << " microseconds "
+         << "(" << durationRandom.count() / 1000.0 << " milliseconds)" << endl << endl;
+
+    cout << "2. Already Sorted Array (Best Case):" << endl;
+    cout << "   " << durationSorted.count() << " microseconds "
+         << "(" << durationSorted.count() / 1000.0 << " milliseconds)" << endl << endl;
+
+    cout << "3. Reversed Array (Worst Case):" << endl;
+    cout << "   " << durationReversed.count() << " microseconds "
+         << "(" << durationReversed.count() / 1000.0 << " milliseconds)" << endl << endl;
+
+    return 0;
+}
+```
+### 2. Результати практичних замірів 
+
+[merge_sort_results.csv](https://github.com/user-attachments/files/29287185/merge_sort_results.csv)
+
+```csv
+Array_Size,Best_Case_Mks,Average_Case_Mks,Worst_Case_Mks
+10000,3043,3192,2665
+```
