@@ -397,14 +397,18 @@ Array_Size,Best_Case_Mks,Average_Case_Mks,Worst_Case_Mks
 2. Добре працює в системах баз даних та пошукових системах, де важливе значення має дотримання порядку рівних ключів.
 3. Використовується в Android, Swift та інших бібліотеках завдяки своїй стабільності та ефективності.
 
-## Деякі дискусії, пов'язані із алгоритмом сортування злиттям (Merge Sort):
-1. Обговорення корисних аспектів сортування злиттям ( https://www.quora.com/What-is-merge-sort-and-how-is-it-useful )
-2. Обговорення можливостей покращення сортування злиттям ( https://www.quora.com/How-can-we-improve-the-performance-of-a-merge-sort ) 
-3. Обговорення стабільності сортування злитям ( https://www.quora.com/Is-merge-sort-a-stable-sorting-algorithm )
-
 
 ## Використані джерела: 
-
+1. https://www.geeksforgeeks.org/dsa/timsort/
+2. https://www.tutorialspoint.com/article/tim-sort-algorithm-in-cplusplus
+3. https://www.kirupa.com/sorts/timsort.htm
+4. https://youtu.be/0Dg41UEK3Io?si=Zdic7CqTYq_NaSTZ
+5. https://newsletter.systemdesign.one/p/timsort-algorithm
+6. https://skerritt.blog/timsort/
+7. https://fd93.me/pages/cs-101-08
+8. https://uk.wikipedia.org/wiki/Timsort
+9. https://www.chrislaux.com/timsort
+10. https://www.meegle.com/en_us/topics/algorithm/tim-sort-algorithms
 
 
  
