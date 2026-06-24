@@ -4,7 +4,7 @@
 
 2.**[Сортування вставкою(Insertion Sort)](insertion-sort.md).**
 
-3.**[Сортування злиттям(Merge Sort)](merge-sort.md) (У розробці).** 
+3.**[Сортування злиттям(Merge Sort)](merge-sort.md).** 
 
 4.**[Сортування Тіма(Tim Sort)](tim-sort.md) (У розробці).**
 
